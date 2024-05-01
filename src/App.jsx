@@ -5,13 +5,15 @@ import loginService from './services/login'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+import LoginForm from './components/LoginForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState({ message: null, className: 'notification'})
+  const [notification, setNotification] = useState({ message: null, className: 'notification' })
+  const [loginVisible, setLoginVisible] = useState(false)
 
   const blogFormRef = useRef()
 
@@ -29,33 +31,6 @@ const App = () => {
       setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
     )
   }, [])
-
-  const loginForm = () => (
-    <div>
-      <h2>log in to application</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-          <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
-      </form>
-    </div>
-  )
 
   const addBlog = (blogObject) => {
     blogFormRef.current.toggleVisibility()
@@ -80,9 +55,6 @@ const App = () => {
           setNotification({ message: null })
         }, 5000)
       })
-/*       blogService.getAll().then(blogs =>
-        setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
-      ) */
   }
 
   const updateLikes = (id) => {
@@ -100,7 +72,7 @@ const App = () => {
         }, 5000)
       })
       .catch(error => {
-        console.log("error in updating", error)
+        console.log('error in updating', error)
         setNotification({
           message: 'Error in liking the blog',
           className: 'notification-error'
@@ -110,10 +82,10 @@ const App = () => {
         }, 5000)
       })
 
-      // fetch blogs with proper user field after updating like count
-      blogService.getAll().then(blogs =>
-        setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
-      )
+    // fetch blogs with proper user field after updating like count
+    blogService.getAll().then(blogs =>
+      setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
+    )
   }
 
   const deleteOneBlog = (id) => {
@@ -123,7 +95,7 @@ const App = () => {
       blogService
         .deleteBlog(id)
         .then(returnedBlog => {
-          console.log("deleted", returnedBlog)
+          console.log('deleted', returnedBlog)
           const blogsAfterDeletion = blogs.filter(b => b.id !== id)
           setBlogs( blogsAfterDeletion )
           setNotification({
@@ -135,7 +107,7 @@ const App = () => {
           }, 5000)
         })
         .catch(error => {
-          console.log("error in deleting", error)
+          console.log('error in deleting', error)
           setNotification({
             message: 'Error in removing the blog',
             className: 'notification-error'
@@ -145,6 +117,29 @@ const App = () => {
           }, 5000)
         })
     }
+  }
+
+  const loginForm = () => {
+    const hideWhenVisible = { display: loginVisible ? 'none' : '' }
+    const showWhenVisible = { display: loginVisible ? '' : 'none' }
+
+    return (
+      <div>
+        <div style={hideWhenVisible}>
+          <button onClick={() => setLoginVisible(true)}>log in</button>
+        </div>
+        <div style={showWhenVisible}>
+          <LoginForm
+            username={username}
+            password={password}
+            handleUsernameChange={({ target }) => setUsername(target.value)}
+            handlePasswordChange={({ target }) => setPassword(target.value)}
+            handleSubmit={handleLogin}
+          />
+          <button onClick={() => setLoginVisible(false)}>cancel</button>
+        </div>
+      </div>
+    )
   }
 
   const handleLogin = async (event) => {
@@ -200,7 +195,7 @@ const App = () => {
           updateLikes={updateLikes}
           deleteOneBlog={deleteOneBlog}
           user={user}
-          />
+        />
       )}
     </div>
   )

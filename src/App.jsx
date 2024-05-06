@@ -32,6 +32,14 @@ const App = () => {
     )
   }, [])
 
+  const loadBlogs = () => {
+    blogService
+      .getAll()
+      .then(blogs =>
+        setBlogs( blogs.sort((a, b) => b.likes - a.likes ))
+      )
+  }
+
   const addBlog = (blogObject) => {
     blogFormRef.current.toggleVisibility()
     blogService
@@ -45,6 +53,7 @@ const App = () => {
         setTimeout(() => {
           setNotification({ message: null })
         }, 5000)
+        loadBlogs() // gets user details from database, otherwise new blog wouldn't have them
       })
       .catch(error => {
         setNotification({
@@ -70,6 +79,7 @@ const App = () => {
         setTimeout(() => {
           setNotification({ message: null })
         }, 5000)
+        loadBlogs() // blogs loaded sorted by likes
       })
       .catch(error => {
         console.log('error in updating', error)
@@ -81,11 +91,6 @@ const App = () => {
           setNotification({ message: null })
         }, 5000)
       })
-
-    // fetch blogs with proper user field after updating like count
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
-    )
   }
 
   const deleteOneBlog = (id) => {

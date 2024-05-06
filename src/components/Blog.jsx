@@ -33,7 +33,7 @@ const Blog = ({ blog, updateLikes, deleteOneBlog, user }) => {
         {blog.title} {blog.author} {' '}
         <button onClick={toggleDetailsVisibility}>view</button>
       </div>
-      <div style={showWhenVisible} className='more-blog-details' data-testid='blog-details'>
+      <div style={showWhenVisible} className='more-blog-details'>
         {blog.title} {blog.author} {' '}
         <button onClick={toggleDetailsVisibility}>hide</button> <br />
         {blog.url} <br />
